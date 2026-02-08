@@ -2,12 +2,16 @@ FROM php:8.1-cli
 
 WORKDIR /app
 
-# System dependencies
+# System dependencies (INI KUNCI UTAMA)
 RUN apt-get update && apt-get install -y \
-    git unzip zip curl \
+    git \
+    unzip \
+    zip \
+    curl \
+    libzip-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js 18 (WAJIB untuk Vite)
+# Install Node.js 18 untuk Vite
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
@@ -23,7 +27,7 @@ RUN curl -sS https://getcomposer.org/installer | php \
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# === INI KUNCI UTAMA ===
+# Build Vite assets (INI YANG MENGHILANGKAN ERROR MANIFEST)
 RUN npm install
 RUN npm run build
 
