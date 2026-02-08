@@ -2,16 +2,16 @@ FROM php:8.1-cli
 
 WORKDIR /app
 
-# Install system deps
+# System dependencies
 RUN apt-get update && apt-get install -y \
     git unzip zip curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js
+# Install Node.js 18 (WAJIB untuk Vite)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
-# Install PHP extensions
+# PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql zip
 
 # Copy project
@@ -23,10 +23,11 @@ RUN curl -sS https://getcomposer.org/installer | php \
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Install frontend deps & build Vite
-RUN npm install && npm run build
+# === INI KUNCI UTAMA ===
+RUN npm install
+RUN npm run build
 
-# Permission
+# Permission Laravel
 RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 8080
