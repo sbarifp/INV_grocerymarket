@@ -11,6 +11,9 @@ RUN a2enmod rewrite
 
 COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
+RUN a2dissite 000-default.conf || true \
+    && a2ensite 000-default.conf
+
 COPY . .
 
 RUN chown -R www-data:www-data /var/www/html \
