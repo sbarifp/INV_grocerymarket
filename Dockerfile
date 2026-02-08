@@ -15,24 +15,25 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Enable Apache rewrite
+# Fix Apache MPM conflict
+RUN a2dismod mpm_event || true \
+    && a2dismod mpm_worker || true \
+    && a2enmod mpm_prefork
+
+# Enable rewrite
 RUN a2enmod rewrite
 
 # Copy project
 COPY . .
 
-# Permission untuk Laravel
+# Permission Laravel
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- \
-    --install-dir=/usr/local/bin \
-    --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php \
+    -- --install-dir=/usr/local/bin --filename=composer
 
-# Install PHP dependencies
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-# Generate key (optional jika pakai APP_KEY di env)
-RUN php artisan key:generate || true
 
 EXPOSE 80
