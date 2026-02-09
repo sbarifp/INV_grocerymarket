@@ -2,7 +2,7 @@ FROM php:8.1-cli
 
 WORKDIR /app
 
-# System dependencies (INI KUNCI UTAMA)
+# System dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -27,9 +27,13 @@ RUN curl -sS https://getcomposer.org/installer | php \
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Build Vite assets (INI YANG MENGHILANGKAN ERROR MANIFEST)
+# Build Vite assets
 RUN npm install
 RUN npm run build
+
+# === TAMBAHAN PENTING (INI FIX TAMPILAN) ===
+RUN php artisan view:clear
+RUN php artisan config:clear
 
 # Permission Laravel
 RUN chmod -R 775 storage bootstrap/cache
